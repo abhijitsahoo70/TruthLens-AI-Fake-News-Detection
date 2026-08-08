@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block title %}About — TruthLens AI System{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="margin-bottom: 2rem;">
+  <span class="hero-tag"><i class="fa-solid fa-graduation-cap"></i> Academic & Portfolio Project</span>
+  <h1 class="hero-title">About TruthLens AI</h1>
+  <p class="hero-subtitle">"Analyze. Detect. Understand. Verify."</p>
+</div>
+
+<div class="glass-card" style="margin-bottom: 2rem;">
+  <h2 style="font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-bullseye" style="color: var(--primary);"></i> Project Objective & Scope
+  </h2>
+  <p style="color: var(--text-main); font-size: 0.98rem; line-height: 1.7; margin-bottom: 1rem;">
+    <strong>TruthLens AI</strong> is an advanced, full-stack Machine Learning web application designed to analyze news headlines and articles to detect potential misinformation, clickbait tactics, and emotional manipulation.
+  </p>
+  <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.7;">
+    Unlike simple binary classifiers that output only a single "REAL" or "FAKE" label, TruthLens AI generates a comprehensive <strong>News Forensics Report</strong> combining TF-IDF machine learning probability with multi-dimensional heuristic rules (clickbait detection, emotional language intensity, structural text statistics, and explainable feature attributions).
+  </p>
+</div>
+
+<!-- Architecture & Pipeline Diagram -->
+<div class="glass-card" style="margin-bottom: 2rem;">
+  <h2 style="font-size: 1.5rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-diagram-project" style="color: var(--warning-color);"></i> System Architecture & Pipeline
+  </h2>
+  
+  <div style="background: rgba(15, 23, 42, 0.7); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); text-align: center; font-family: monospace; font-size: 0.9rem; color: #818cf8; overflow-x: auto; white-space: nowrap;">
+    News Input ──► Text Cleaning & Preprocessing ──► TF-IDF Vectorization ──► ML Classifier (Logistic Reg / SVM)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+    User Forensics Report ◄── SQLite DB Archiving ◄── Credibility Scoring & Risk Assessment ◄──┘
+  </div>
+</div>
+
+<!-- Tech Stack Grid -->
+<div class="glass-card" style="margin-bottom: 2rem;">
+  <h2 style="font-size: 1.5rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-code" style="color: var(--real-color);"></i> Technology Stack
+  </h2>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem;"><i class="fa-brands fa-python"></i> Backend & ML</h3>
+      <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+        <li>Python 3 & Flask Web Framework</li>
+        <li>Scikit-Learn (TF-IDF, Logistic Regression, Naive Bayes, Linear SVM)</li>
+        <li>Pandas & NumPy data manipulation</li>
+        <li>Joblib model serialization</li>
+      </ul>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <h3 style="font-size: 1.1rem; color: var(--real-color); margin-bottom: 0.5rem;"><i class="fa-database"></i> Database & Security</h3>
+      <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+        <li>SQLite relational database (`database.db`)</li>
+        <li>Werkzeug password hashing (`pbkdf2:sha256`)</li>
+        <li>Flask Session-based authentication</li>
+        <li>Parameterized SQL protection</li>
+      </ul>
+    </div>
+
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+      <h3 style="font-size: 1.1rem; color: var(--warning-color); margin-bottom: 0.5rem;"><i class="fa-brands fa-html5"></i> Frontend & UI</h3>
+      <ul style="padding-left: 1.2rem; color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">
+        <li>HTML5 & Semantic Elements</li>
+        <li>Custom Modern Dark CSS3 Glassmorphism System</li>
+        <li>JavaScript (ES6+) for interactive counters & toggles</li>
+        <li>Chart.js for analytics dashboard</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="glass-card" style="border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);">
+  <h3 style="font-size: 1.15rem; color: var(--warning-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-triangle-exclamation"></i> Important Academic Note & Disclaimer
+  </h3>
+  <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;">
+    TruthLens AI is an academic demonstration software created for B.Tech CSE / AI-ML projects, portfolio showcases, and viva examinations. 
+    It is a machine learning prediction and statistical analysis tool, <strong>not an authoritative fact-checking service</strong>. Predictions should be interpreted as probabilistic estimates based on trained dataset patterns.
+  </p>
+</div>
+{% endblock %}

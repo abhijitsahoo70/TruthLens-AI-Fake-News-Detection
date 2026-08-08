@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}News Forensics Report — TruthLens AI{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 1.5rem;">
+  <a href="{{ url_for('index') }}" style="font-size: 0.9rem; font-weight: 500;"><i class="fa-solid fa-arrow-left"></i> Analyze Another Article</a>
+</div>
+
+<!-- Header Verdict Card -->
+<div class="result-header-card {% if prediction == 'FAKE' %}fake-theme{% else %}real-theme{% endif %}">
+  <span style="text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">
+    ━━━━━━━━━━━━━━━━ NEWS FORENSICS REPORT ━━━━━━━━━━━━━━━━
+  </span>
+
+  <div class="verdict-badge {% if prediction == 'FAKE' %}fake{% else %}real{% endif %}" style="margin-top: 1rem;">
+    {% if prediction == 'FAKE' %}
+      <i class="fa-solid fa-circle-exclamation"></i> POSSIBLY FAKE
+    {% else %}
+      <i class="fa-solid fa-circle-check"></i> LIKELY REAL
+    {% endif %}
+  </div>
+
+  <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto 1.5rem auto;">
+    Automated Machine Learning & Linguistic Audit completed. Review the forensic indicators below.
+  </p>
+
+  <div class="metrics-summary-grid">
+    <div class="metric-stat-box">
+      <div class="metric-stat-label">Model Confidence</div>
+      <div class="metric-stat-value" style="color: {% if prediction == 'FAKE' %}var(--fake-color){% else %}var(--real-color){% endif %};">
+        {{ confidence }}%
+      </div>
+    </div>
+
+    <div class="metric-stat-box">
+      <div class="metric-stat-label">Credibility Score</div>
+      <div class="metric-stat-value" style="color: var(--warning-color);">
+        {{ credibility.score }}<span style="font-size: 1rem; color: var(--text-muted);">/100</span>
+      </div>
+      <span class="badge badge-{{ credibility.badge_class }}" style="margin-top: 0.4rem;">
+        {{ credibility.label }}
+      </span>
+    </div>
+
+    <div class="metric-stat-box">
+      <div class="metric-stat-label">News Risk Level</div>
+      <div class="metric-stat-value" style="color: var(--{{ credibility.risk_class }}-color);">
+        {{ credibility.risk_level }}
+      </div>
+      <span class="badge badge-{{ credibility.risk_class }}" style="margin-top: 0.4rem;">
+        Risk Assessment
+      </span>
+    </div>
+
+    <div class="metric-stat-box">
+      <div class="metric-stat-label">Clickbait Risk</div>
+      <div class="metric-stat-value" style="color: {% if clickbait.risk_level == 'HIGH' %}var(--fake-color){% elif clickbait.risk_level == 'MEDIUM' %}var(--warning-color){% else %}var(--real-color){% endif %};">
+        {{ clickbait.risk_level }}
+      </div>
+      <span class="badge {% if clickbait.risk_level == 'HIGH' %}badge-danger{% elif clickbait.risk_level == 'MEDIUM' %}badge-warning{% else %}badge-success{% endif %}" style="margin-top: 0.4rem;">
+        Score: {{ clickbait.score }}/100
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Submitted Text Preview -->
+<div class="glass-card" style="margin-bottom: 2rem;">
+  <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-file-text"></i> Submitted News Text
+  </h3>
+  <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 1.25rem; border-radius: var(--radius-md); font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap;">
+    {{ news_text }}
+  </div>
+</div>
+
+<!-- Explainable Prediction Breakdown -->
+<div class="glass-card" style="margin-bottom: 2rem;">
+  <h3 style="font-size: 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-lightbulb" style="color: var(--warning-color);"></i> Why was this classified as {{ prediction }}?
+  </h3>
+  <ul style="padding-left: 1.5rem; color: var(--text-main); font-size: 0.95rem;">
+    {% for item in explanation.explanations %}
+      <li style="margin-bottom: 0.6rem;">{{ item }}</li>
+    {% endfor %}
+  </ul>
+
+  {% if explanation.top_words %}
+  <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+    <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Key Influencing Terms:</span>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+      {% for word in explanation.top_words %}
+        <span style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem; font-family: monospace;">
+          {{ word }}
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Forensics Grid: Clickbait & Emotional Language -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+  
+  <!-- Clickbait Analysis Card -->
+  <div class="glass-card">
+    <h3 style="font-size: 1.15rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-bullhorn" style="color: var(--primary);"></i> Clickbait Detector
+    </h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="color: var(--text-muted); font-size: 0.9rem;">Clickbait Score</span>
+      <span style="font-weight: 700;">{{ clickbait.score }}/100</span>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-fill" style="width: {{ clickbait.score }}%; background: {% if clickbait.score > 50 %}var(--fake-color){% elif clickbait.score > 25 %}var(--warning-color){% else %}var(--real-color){% endif %};"></div>
+    </div>
+
+    <div style="margin-top: 1rem;">
+      <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Detected Clickbait Indicators:</span>
+      {% if clickbait.indicators %}
+        <ul style="padding-left: 1.25rem; margin-top: 0.5rem; font-size: 0.88rem; color: var(--text-main);">
+          {% for ind in clickbait.indicators %}
+            <li style="margin-bottom: 0.3rem;">{{ ind.text }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p style="font-size: 0.88rem; color: var(--real-color); margin-top: 0.5rem;">✓ No clickbait patterns detected.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Emotional Manipulation Card -->
+  <div class="glass-card">
+    <h3 style="font-size: 1.15rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-heart-pulse" style="color: var(--fake-color);"></i> Emotional Language Analysis
+    </h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+      <span style="color: var(--text-muted); font-size: 0.9rem;">Emotional Intensity</span>
+      <span class="badge {% if emotional.intensity == 'HIGH' %}badge-danger{% elif emotional.intensity == 'MEDIUM' %}badge-warning{% else %}badge-success{% endif %}">
+        {{ emotional.intensity }}
+      </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1rem;">
+      <div style="background: rgba(15, 23, 42, 0.5); padding: 0.6rem; border-radius: 6px; font-size: 0.85rem;">
+        <span style="color: var(--text-muted);">Fear terms:</span> <strong>{{ emotional.fear_count }}</strong>
+      </div>
+      <div style="background: rgba(15, 23, 42, 0.5); padding: 0.6rem; border-radius: 6px; font-size: 0.85rem;">
+        <span style="color: var(--text-muted);">Anger terms:</span> <strong>{{ emotional.anger_count }}</strong>
+      </div>
+      <div style="background: rgba(15, 23, 42, 0.5); padding: 0.6rem; border-radius: 6px; font-size: 0.85rem;">
+        <span style="color: var(--text-muted);">Urgency indicators:</span> <strong>{{ emotional.urgency_count }}</strong>
+      </div>
+      <div style="background: rgba(15, 23, 42, 0.5); padding: 0.6rem; border-radius: 6px; font-size: 0.85rem;">
+        <span style="color: var(--text-muted);">Positive terms:</span> <strong>{{ emotional.positive_count }}</strong>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Text Statistics Card -->
+<div class="glass-card" style="margin-bottom: 2rem;">
+  <h3 style="font-size: 1.15rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-chart-line" style="color: var(--info-color);"></i> Text Statistics & Structure
+  </h3>
+
+  <div class="metrics-summary-grid">
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 0.85rem; border-radius: var(--radius-sm); text-align: center;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Words</div>
+      <div style="font-size: 1.4rem; font-weight: 700;">{{ stats.word_count }}</div>
+    </div>
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 0.85rem; border-radius: var(--radius-sm); text-align: center;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Characters</div>
+      <div style="font-size: 1.4rem; font-weight: 700;">{{ stats.character_count }}</div>
+    </div>
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 0.85rem; border-radius: var(--radius-sm); text-align: center;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Sentences</div>
+      <div style="font-size: 1.4rem; font-weight: 700;">{{ stats.sentence_count }}</div>
+    </div>
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 0.85rem; border-radius: var(--radius-sm); text-align: center;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Capitalized Words</div>
+      <div style="font-size: 1.4rem; font-weight: 700;">{{ stats.uppercase_word_count }}</div>
+    </div>
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 0.85rem; border-radius: var(--radius-sm); text-align: center;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Exclamation (!)</div>
+      <div style="font-size: 1.4rem; font-weight: 700;">{{ stats.exclamation_count }}</div>
+    </div>
+    <div style="background: rgba(15, 23, 42, 0.5); padding: 0.85rem; border-radius: var(--radius-sm); text-align: center;">
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Question (?)</div>
+      <div style="font-size: 1.4rem; font-weight: 700;">{{ stats.question_count }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Action Bar -->
+<div class="btn-group-row" style="margin-top: 2rem;">
+  <a href="{{ url_for('index') }}" class="btn btn-secondary"><i class="fa-solid fa-magnifying-glass"></i> Analyze Another</a>
+  {% if prediction_id %}
+    <a href="{{ url_for('report', id=prediction_id) }}" class="btn btn-primary"><i class="fa-solid fa-file-invoice"></i> View Saved Report</a>
+  {% endif %}
+  {% if logged_in %}
+    <a href="{{ url_for('history') }}" class="btn btn-secondary"><i class="fa-solid fa-clock-rotate-left"></i> View Analysis History</a>
+  {% endif %}
+</div>
+{% endblock %}

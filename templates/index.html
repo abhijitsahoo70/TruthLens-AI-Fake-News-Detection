@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}TruthLens AI — AI-Powered Fake News Detection & News Forensics System{% endblock %}
+
+{% block content %}
+<section class="hero-section">
+  <span class="hero-tag"><i class="fa-solid fa-microchip"></i> Next-Gen NLP & ML Forensics</span>
+  <h1 class="hero-title">TruthLens AI</h1>
+  <p class="hero-subtitle">"Analyze. Detect. Understand. Verify."</p>
+  <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.75rem;">
+    Advanced machine learning classification integrated with multi-dimensional text forensics, clickbait detection, and emotional manipulation auditing.
+  </p>
+</section>
+
+<!-- Analysis Input Box -->
+<div class="glass-card analyzer-card">
+  <h2 style="font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-magnifying-glass" style="color: var(--primary);"></i> Submit News Article or Headline for Analysis
+  </h2>
+  
+  <form id="predict-form" action="{{ url_for('predict') }}" method="POST">
+    <div class="textarea-container">
+      <textarea 
+        name="news_text" 
+        id="news_text" 
+        class="news-textarea" 
+        placeholder="Paste your news article text, breaking headline, or story here to generate a comprehensive News Forensics Report..." 
+        required></textarea>
+      
+      <div class="textarea-footer">
+        <div style="display: flex; gap: 1rem;">
+          <span id="char-count">0 characters</span>
+          <span>•</span>
+          <span id="word-count">0 words</span>
+        </div>
+        <button type="button" id="clear-text-btn" class="btn btn-secondary btn-sm" style="padding: 0.2rem 0.6rem;">
+          <i class="fa-solid fa-trash-can"></i> Clear Text
+        </button>
+      </div>
+    </div>
+
+    <div class="btn-group-row">
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        <i class="fa-solid fa-shield"></i> Instant ML Classification + Forensics Engine
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-magnifying-glass"></i> Analyze News
+      </button>
+    </div>
+  </form>
+
+  <!-- Quick Try Sample Articles -->
+  <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color);">
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600;">
+      <i class="fa-solid fa-flask"></i> Quick Demo Test Samples:
+    </p>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <button type="button" class="btn btn-secondary btn-sm sample-btn" 
+        data-text="SHOCKING SECRET: Scientists Discover Miracle Herb That Instantly Cures All Diseases Overnight! You won't believe what Big Pharma has been hiding from you for decades! Share before government deletes this secret!">
+        <i class="fa-solid fa-bug" style="color: var(--fake-color);"></i> Sample Sensational Clickbait (Fake)
+      </button>
+      <button type="button" class="btn btn-secondary btn-sm sample-btn" 
+        data-text="NASA James Webb Space Telescope Captures Detailed Images of Distant Exoplanet Atmosphere. Astronomers detected water vapor and carbon dioxide in the upper atmosphere of WASP-39b located 700 light years away.">
+        <i class="fa-solid fa-check-circle" style="color: var(--real-color);"></i> Sample Scientific News (Real)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Features Overview Grid -->
+<h2 style="text-align: center; margin-bottom: 0.5rem; font-size: 1.85rem;">System Forensic Capabilities</h2>
+<p style="text-align: center; color: var(--text-muted); margin-bottom: 2rem; font-size: 0.95rem;">
+  Beyond simple binary classification: TruthLens AI provides deep multi-layered auditing
+</p>
+
+<div class="features-grid">
+  <div class="feature-card">
+    <div class="feature-icon"><i class="fa-solid fa-robot"></i></div>
+    <h3 class="feature-title">AI Fake News Classifier</h3>
+    <p class="feature-desc">TF-IDF vectorizer paired with optimized Logistic Regression and benchmarked machine learning models.</p>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><i class="fa-solid fa-shield-cat"></i></div>
+    <h3 class="feature-title">Credibility Score (0-100)</h3>
+    <p class="feature-desc">Transparent 0-100 credibility index combining ML probability, clickbait risk, emotional tone, and text metrics.</p>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><i class="fa-solid fa-bullhorn"></i></div>
+    <h3 class="feature-title">Clickbait Detector</h3>
+    <p class="feature-desc">Pattern recognition module spotting sensational headlines, excessive punctuation, and curiosity gaps.</p>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+    <h3 class="feature-title">Emotional Language Audit</h3>
+    <p class="feature-desc">Linguistic scanning for manipulative fear, anger, and urgency triggers designed to provoke knee-jerk reactions.</p>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><i class="fa-solid fa-lightbulb"></i></div>
+    <h3 class="feature-title">Explainable AI (XAI)</h3>
+    <p class="feature-desc">Transparent explanations revealing the key vocabulary and indicators driving the model's prediction.</p>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon"><i class="fa-solid fa-database"></i></div>
+    <h3 class="feature-title">Analysis History & Dashboard</h3>
+    <p class="feature-desc">Secure SQLite database archiving user analyses with searchable history, printable reports, and trend analytics.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.sample-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const text = this.getAttribute('data-text');
+      const textarea = document.getElementById('news_text');
+      if (textarea) {
+        textarea.value = text;
+        textarea.dispatchEvent(new Event('input'));
+        textarea.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+{% endblock %}

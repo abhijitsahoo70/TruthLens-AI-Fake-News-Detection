@@ -1,0 +1,40 @@
+{
+    "model_name": "Logistic Regression",
+    "accuracy": 100.0,
+    "precision": 100.0,
+    "recall": 100.0,
+    "f1_score": 100.0,
+    "confusion_matrix": [
+        [
+            3,
+            0
+        ],
+        [
+            0,
+            2
+        ]
+    ],
+    "total_samples": 22,
+    "train_samples": 17,
+    "test_samples": 5,
+    "comparison": {
+        "Logistic Regression": {
+            "accuracy": 100.0,
+            "precision": 100.0,
+            "recall": 100.0,
+            "f1_score": 100.0
+        },
+        "Multinomial Naive Bayes": {
+            "accuracy": 100.0,
+            "precision": 100.0,
+            "recall": 100.0,
+            "f1_score": 100.0
+        },
+        "Linear SVM": {
+            "accuracy": 100.0,
+            "precision": 100.0,
+            "recall": 100.0,
+            "f1_score": 100.0
+        }
+    }
+}

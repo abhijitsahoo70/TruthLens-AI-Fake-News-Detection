@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}News Forensics Report #{{ record.id }} — TruthLens AI{% endblock %}
+
+{% block content %}
+<div class="no-print" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+  <a href="{{ url_for('history') }}" style="font-weight: 500;"><i class="fa-solid fa-arrow-left"></i> Back to History</a>
+  <div style="display: flex; gap: 0.75rem;">
+    <button onclick="window.print()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-print"></i> Print Report</button>
+    <form action="{{ url_for('delete_record', id=record.id) }}" method="POST" class="delete-form">
+      <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> Delete Report</button>
+    </form>
+  </div>
+</div>
+
+<div class="glass-card" style="max-width: 800px; margin: 0 auto; border: 2px solid var(--border-glow); padding: 3rem 2.5rem;">
+  <div style="text-align: center; border-bottom: 2px dashed var(--border-color); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+    <p style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+    <h1 style="font-size: 2rem; letter-spacing: 0.05em;">NEWS FORENSICS REPORT</h1>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">Report ID: #{{ record.id }} • Generated on {{ record.created_at[:16] }}</p>
+    <p style="font-family: monospace; font-size: 0.85rem; color: var(--text-muted);">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+  </div>
+
+  <!-- Prediction & Risk Summary -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Prediction</div>
+      <div style="font-size: 1.75rem; font-weight: 800; color: {% if record.prediction == 'FAKE' %}var(--fake-color){% else %}var(--real-color){% endif %}; margin-top: 0.2rem;">
+        {% if record.prediction == 'FAKE' %}🔴 POSSIBLY FAKE{% else %}🟢 LIKELY REAL{% endif %}
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Model Confidence</div>
+      <div style="font-size: 1.75rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">
+        {{ record.confidence }}%
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Credibility Score</div>
+      <div style="font-size: 1.75rem; font-weight: 800; color: var(--warning-color); margin-top: 0.2rem;">
+        {{ record.credibility_score }} <span style="font-size: 1rem; color: var(--text-muted);">/ 100</span>
+      </div>
+    </div>
+
+    <div>
+      <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Risk Level</div>
+      <div style="font-size: 1.75rem; font-weight: 800; color: {% if record.risk_level == 'HIGH' %}var(--fake-color){% elif record.risk_level == 'MEDIUM' %}var(--warning-color){% else %}var(--real-color){% endif %}; margin-top: 0.2rem;">
+        {{ record.risk_level }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Detected Forensic Indicators -->
+  <div style="margin-bottom: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border-color);">
+    <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: var(--text-main);">
+      <i class="fa-solid fa-flag" style="color: var(--primary);"></i> Detected Indicators
+    </h3>
+
+    {% if record.indicators %}
+      {% for ind in record.indicators %}
+        <div class="indicator-item">
+          <div class="indicator-icon">
+            {% if ind.severity == 'HIGH' %}
+              <i class="fa-solid fa-circle-xmark" style="color: var(--fake-color);"></i>
+            {% elif ind.severity == 'MEDIUM' %}
+              <i class="fa-solid fa-triangle-exclamation" style="color: var(--warning-color);"></i>
+            {% else %}
+              <i class="fa-solid fa-circle-info" style="color: var(--info-color);"></i>
+            {% endif %}
+          </div>
+          <div>
+            <div style="font-weight: 600; font-size: 0.95rem;">✓ {{ ind.indicator_text }}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted);">Type: {{ ind.indicator_type }} | Severity: {{ ind.severity }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p style="color: var(--real-color); font-size: 0.95rem;">✓ No suspicious language or formatting indicators detected.</p>
+    {% endif %}
+  </div>
+
+  <!-- Text Statistics Section -->
+  <div style="margin-bottom: 2rem; padding-top: 1.5rem; border-top: 1px dashed var(--border-color);">
+    <h3 style="font-size: 1.15rem; margin-bottom: 1rem; color: var(--text-main);">
+      <i class="fa-solid fa-calculator" style="color: var(--info-color);"></i> Text Statistics
+    </h3>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.95rem; font-family: monospace;">
+      <div>Words: <strong>{{ record.word_count }}</strong></div>
+      <div>Characters: <strong>{{ record.character_count }}</strong></div>
+      <div>Sentences: <strong>{{ record.sentence_count }}</strong></div>
+      <div>Clickbait Score: <strong>{{ record.clickbait_score }}/100</strong></div>
+      <div>Emotional Score: <strong>{{ record.emotional_score }}/100</strong></div>
+    </div>
+  </div>
+
+  <!-- Original Analyzed Text Snippet -->
+  <div style="padding-top: 1.5rem; border-top: 1px dashed var(--border-color);">
+    <h3 style="font-size: 1.15rem; margin-bottom: 0.75rem; color: var(--text-main);">
+      <i class="fa-solid fa-align-left"></i> Article Text
+    </h3>
+    <div style="background: rgba(15, 23, 42, 0.6); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); font-size: 0.9rem; line-height: 1.6; white-space: pre-wrap;">
+      {{ record.news_text }}
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 2.5rem; border-top: 2px dashed var(--border-color); padding-top: 1.5rem;">
+    <p style="font-family: monospace; font-size: 0.8rem; color: var(--text-dim);">
+      TruthLens AI Forensics Engine v1.0 • Generated for User ID: #{{ record.user_id }}
+    </p>
+  </div>
+</div>
+{% endblock %}

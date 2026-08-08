@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}Personal Dashboard — TruthLens AI{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+  <div>
+    <h1 style="font-size: 2.25rem;">Welcome back, <span class="brand-accent">{{ user_name }}</span>!</h1>
+    <p style="color: var(--text-muted); font-size: 0.95rem;">Here is your personal news forensics analytics and analysis history summary.</p>
+  </div>
+  <div>
+    <a href="{{ url_for('index') }}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Analysis</a>
+  </div>
+</div>
+
+<!-- Key Performance Stats Grid -->
+<div class="metrics-summary-grid" style="margin-bottom: 2.5rem;">
+  <div class="metric-stat-box">
+    <div class="metric-stat-label"><i class="fa-solid fa-list-check"></i> Total Analyses</div>
+    <div class="metric-stat-value" style="color: var(--text-main);">{{ stats.total }}</div>
+  </div>
+
+  <div class="metric-stat-box">
+    <div class="metric-stat-label"><i class="fa-solid fa-bug" style="color: var(--fake-color);"></i> Fake Predictions</div>
+    <div class="metric-stat-value" style="color: var(--fake-color);">{{ stats.fake_count }}</div>
+  </div>
+
+  <div class="metric-stat-box">
+    <div class="metric-stat-label"><i class="fa-solid fa-check-circle" style="color: var(--real-color);"></i> Real Predictions</div>
+    <div class="metric-stat-value" style="color: var(--real-color);">{{ stats.real_count }}</div>
+  </div>
+
+  <div class="metric-stat-box">
+    <div class="metric-stat-label"><i class="fa-solid fa-gauge-high"></i> Avg Confidence</div>
+    <div class="metric-stat-value" style="color: var(--info-color);">{{ stats.avg_confidence }}%</div>
+  </div>
+
+  <div class="metric-stat-box">
+    <div class="metric-stat-label"><i class="fa-solid fa-shield-halved"></i> Avg Credibility</div>
+    <div class="metric-stat-value" style="color: var(--warning-color);">{{ stats.avg_credibility }}/100</div>
+  </div>
+</div>
+
+{% if stats.total > 0 %}
+<!-- Analytics Charts Section -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+  <div class="glass-card">
+    <h3 style="font-size: 1.2rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-chart-pie" style="color: var(--primary);"></i> Prediction Distribution
+    </h3>
+    <div style="max-width: 280px; margin: 0 auto;">
+      <canvas id="predictionChart"></canvas>
+    </div>
+  </div>
+
+  <div class="glass-card">
+    <h3 style="font-size: 1.2rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-chart-simple" style="color: var(--primary);"></i> Credibility Score Breakdown
+    </h3>
+    <canvas id="credibilityChart" style="max-height: 250px;"></canvas>
+  </div>
+</div>
+{% else %}
+<div class="glass-card" style="text-align: center; padding: 3rem 1.5rem; margin-bottom: 3rem;">
+  <div class="brand-icon" style="margin: 0 auto 1rem auto; width: 60px; height: 60px; font-size: 2rem;">
+    <i class="fa-solid fa-folder-open"></i>
+  </div>
+  <h3>No Analysis Records Found Yet</h3>
+  <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0;">Analyze your first news article or headline to view personal dashboard analytics.</p>
+  <a href="{{ url_for('index') }}" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Analyze News Now</a>
+</div>
+{% endif %}
+
+<!-- Recent History Table -->
+<div class="glass-card">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+    <h3 style="font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i> Recent Forensics History
+    </h3>
+    {% if recent %}
+      <a href="{{ url_for('history') }}" style="font-size: 0.9rem; font-weight: 600;">View All History →</a>
+    {% endif %}
+  </div>
+
+  {% if recent %}
+  <div class="table-responsive">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>News Snippet</th>
+          <th>Prediction</th>
+          <th>Confidence</th>
+          <th>Credibility</th>
+          <th>Risk</th>
+          <th>Date</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in recent %}
+        <tr>
+          <td style="color: var(--text-dim); font-weight: 600;">#{{ item.id }}</td>
+          <td style="max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            {{ item.news_text }}
+          </td>
+          <td>
+            <span class="badge {% if item.prediction == 'REAL' %}badge-success{% else %}badge-danger{% endif %}">
+              {{ item.prediction }}
+            </span>
+          </td>
+          <td>{{ item.confidence }}%</td>
+          <td><strong>{{ item.credibility_score }}</strong>/100</td>
+          <td>
+            <span class="badge {% if item.risk_level == 'HIGH' %}badge-danger{% elif item.risk_level == 'MEDIUM' %}badge-warning{% else %}badge-success{% endif %}">
+              {{ item.risk_level }}
+            </span>
+          </td>
+          <td style="font-size: 0.85rem; color: var(--text-muted);">{{ item.created_at[:16] }}</td>
+          <td>
+            <a href="{{ url_for('report', id=item.id) }}" class="btn btn-secondary btn-sm">
+              <i class="fa-solid fa-file-lines"></i> Report
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color: var(--text-muted); font-size: 0.9rem;">No recent predictions logged.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const statsData = {{ stats|tojson }};
+    initDashboardCharts(statsData);
+  });
+</script>
+{% endblock %}

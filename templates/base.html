@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TruthLens AI — Fake News Detection & News Forensics System{% endblock %}</title>
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom Design System CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Loading Overlay -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <h3 style="color: var(--text-main); font-family: var(--font-heading);">Analyzing Article & Executing Forensics Engine...</h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Evaluating Machine Learning signals, clickbait indicators & emotional lexicons</p>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('index') }}" class="brand-logo">
+        <div class="brand-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <span>TruthLens <span class="brand-accent">AI</span></span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}"><i class="fa-solid fa-house"></i> Home</a></li>
+        {% if logged_in %}
+          <li><a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+          <li><a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}"><i class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+        {% endif %}
+        <li><a href="{{ url_for('model_performance') }}" class="nav-link {% if request.endpoint == 'model_performance' %}active{% endif %}"><i class="fa-solid fa-brain"></i> Model Performance</a></li>
+        <li><a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint == 'about' %}active{% endif %}"><i class="fa-solid fa-circle-info"></i> About</a></li>
+        
+        {% if logged_in %}
+          <li class="user-badge"><i class="fa-solid fa-user-circle"></i> {{ user_name }}</li>
+          <li><a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        {% else %}
+          <li><a href="{{ url_for('login') }}" class="nav-link {% if request.endpoint == 'login' %}active{% endif %}">Login</a></li>
+          <li><a href="{{ url_for('register') }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-user-plus"></i> Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="alert-messages">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">
+            <i class="fa-solid {% if category == 'success' %}fa-circle-check{% elif category == 'danger' %}fa-circle-xmark{% elif category == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %}"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main Content Wrapper -->
+  <main class="main-wrapper">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 <strong>TruthLens AI</strong> — Advanced Fake News Detection & News Forensics System.</p>
+    <p class="disclaimer-text">
+      <strong>Disclaimer:</strong> TruthLens AI is an academic machine learning prediction and linguistic text analysis tool. 
+      It provides probability estimates and heuristic indicators based on trained datasets and does not constitute an official or authoritative fact-checking service.
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

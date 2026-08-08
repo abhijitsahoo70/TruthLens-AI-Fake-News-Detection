@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Model Performance & Benchmark — TruthLens AI{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+  <h1 style="font-size: 2.25rem;">Machine Learning Model Performance</h1>
+  <p style="color: var(--text-muted); font-size: 0.95rem;">
+    Empirical evaluation metrics generated during training on the news corpus.
+  </p>
+</div>
+
+{% if metrics %}
+<!-- Top Metrics Cards -->
+<div class="metrics-summary-grid" style="margin-bottom: 2.5rem;">
+  <div class="metric-stat-box" style="border-color: var(--primary-glow);">
+    <div class="metric-stat-label">Model Accuracy</div>
+    <div class="metric-stat-value" style="color: var(--real-color);">{{ metrics.accuracy }}%</div>
+  </div>
+
+  <div class="metric-stat-box">
+    <div class="metric-stat-label">Precision</div>
+    <div class="metric-stat-value" style="color: var(--info-color);">{{ metrics.precision }}%</div>
+  </div>
+
+  <div class="metric-stat-box">
+    <div class="metric-stat-label">Recall</div>
+    <div class="metric-stat-value" style="color: var(--warning-color);">{{ metrics.recall }}%</div>
+  </div>
+
+  <div class="metric-stat-box">
+    <div class="metric-stat-label">F1-Score</div>
+    <div class="metric-stat-value" style="color: var(--primary);">{{ metrics.f1_score }}%</div>
+  </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+  
+  <!-- Active Model Overview -->
+  <div class="glass-card">
+    <h3 style="font-size: 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-microchip" style="color: var(--primary);"></i> Active Classifier Overview
+    </h3>
+    <table class="custom-table" style="font-size: 0.9rem;">
+      <tr>
+        <td style="color: var(--text-muted);">Selected Architecture:</td>
+        <td><strong>{{ metrics.model_name }}</strong></td>
+      </tr>
+      <tr>
+        <td style="color: var(--text-muted);">Text Representation:</td>
+        <td><strong>TF-IDF Vectorizer (Unigrams + Bigrams)</strong></td>
+      </tr>
+      <tr>
+        <td style="color: var(--text-muted);">Feature Space:</td>
+        <td><strong>5,000 Vocabulary Terms</strong></td>
+      </tr>
+      <tr>
+        <td style="color: var(--text-muted);">Total Dataset Size:</td>
+        <td><strong>{{ metrics.total_samples }} samples</strong></td>
+      </tr>
+      <tr>
+        <td style="color: var(--text-muted);">Train / Test Split:</td>
+        <td><strong>{{ metrics.train_samples }} Train / {{ metrics.test_samples }} Test</strong></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Confusion Matrix Card -->
+  <div class="glass-card">
+    <h3 style="font-size: 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-table-cells" style="color: var(--warning-color);"></i> Confusion Matrix
+    </h3>
+    {% if metrics.confusion_matrix %}
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; text-align: center; margin-top: 1rem;">
+      <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--real-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <div style="font-size: 0.8rem; color: var(--text-muted);">True FAKE (TN)</div>
+        <div style="font-size: 1.6rem; font-weight: 800; color: var(--real-color);">{{ metrics.confusion_matrix[0][0] }}</div>
+      </div>
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--fake-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <div style="font-size: 0.8rem; color: var(--text-muted);">False REAL (FP)</div>
+        <div style="font-size: 1.6rem; font-weight: 800; color: var(--fake-color);">{{ metrics.confusion_matrix[0][1] }}</div>
+      </div>
+      <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--fake-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <div style="font-size: 0.8rem; color: var(--text-muted);">False FAKE (FN)</div>
+        <div style="font-size: 1.6rem; font-weight: 800; color: var(--fake-color);">{{ metrics.confusion_matrix[1][0] }}</div>
+      </div>
+      <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--real-color); padding: 1rem; border-radius: var(--radius-sm);">
+        <div style="font-size: 0.8rem; color: var(--text-muted);">True REAL (TP)</div>
+        <div style="font-size: 1.6rem; font-weight: 800; color: var(--real-color);">{{ metrics.confusion_matrix[1][1] }}</div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Candidate Model Benchmarks Comparison Table -->
+{% if metrics.comparison %}
+<div class="glass-card">
+  <h3 style="font-size: 1.25rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+    <i class="fa-solid fa-code-compare" style="color: var(--primary);"></i> Candidate Model Benchmark Comparison
+  </h3>
+  <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+    During the execution of <code>train_model.py</code>, three lightweight architectures were evaluated on the test partition. The top performing model was automatically serialized.
+  </p>
+  <div class="table-responsive">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>Model Architecture</th>
+          <th>Accuracy</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1-Score</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for name, res in metrics.comparison.items() %}
+        <tr>
+          <td><strong>{{ name }}</strong></td>
+          <td>{{ res.accuracy }}%</td>
+          <td>{{ res.precision }}%</td>
+          <td>{{ res.recall }}%</td>
+          <td><strong>{{ res.f1_score }}%</strong></td>
+          <td>
+            {% if name == metrics.model_name %}
+              <span class="badge badge-success"><i class="fa-solid fa-check"></i> Selected Best</span>
+            {% else %}
+              <span class="badge badge-info">Evaluated</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="glass-card" style="text-align: center; padding: 3rem 1.5rem;">
+  <div class="brand-icon" style="margin: 0 auto 1rem auto; width: 60px; height: 60px; font-size: 2rem;">
+    <i class="fa-solid fa-triangle-exclamation" style="color: var(--warning-color);"></i>
+  </div>
+  <h2>No Model Performance Metrics Found</h2>
+  <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0;">Please execute <code>python train_model.py</code> to train the classifier and output performance metrics.</p>
+</div>
+{% endif %}
+
+{% endblock %}
